@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int     @id @default(autoincrement())
+  name       String
+  email      String  @unique
+  firebaseId String
+  alias      Alias[]
+}
+
+model LongURL {
+  id          Int      @id @default(autoincrement())
+  originalUrl String   @unique
+  createdAt   DateTime @default(now())
+  alias       Alias[]
+}
+
+model Alias {
+  id         Int      @id @default(autoincrement())
+  userId     Int?
+  longURLId  Int
+  alias      String?  @unique
+  clickCount Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  longURL LongURL @relation(fields: [longURLId], references: [id])
+  user    User?   @relation(fields: [userId], references: [id])
+
+  clicks ClickAnalytics[]
+}
+
+model ClickAnalytics {
+  id        Int          @id @default(autoincrement())
+  aliasId   Int
+  alias     Alias        @relation(fields: [aliasId], references: [id], onDelete: Cascade)
+  timestamp DateTime     @default(now())
+  ipAddress String
+  country   String?
+  city      String?
+  referrer  String?
+  userAgent String?
+  device    DeviceType?
+  browser   BrowserType?
+  os        OSType?
+
+  @@index([aliasId]) // Index for fast lookups
+}
+
+enum DeviceType {
+  MOBILE
+  TABLET
+  DESKTOP
+}
+
+enum BrowserType {
+  CHROME
+  FIREFOX
+  EDGE
+  SAFARI
+  OPERA
+  OTHER
+}
+
+enum OSType {
+  WINDOWS
+  MAC
+  LINUX
+  IOS
+  ANDROID
+  OTHER
+}
