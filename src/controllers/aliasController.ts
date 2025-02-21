@@ -186,8 +186,4 @@ const redirectAlias = async (req: Request, res: Response) => {
   }
 };
 
-export = {
-  fetchAllAlias,
-  createAlias,
-  redirectAlias,
-};
+export { fetchAllAlias, createAlias, redirectAlias };
