@@ -1,4 +1,4 @@
-export type TrackClick = {
+export type ClickJobData = {
   aliasId: number;
   ip: string;
   referrer: string;
