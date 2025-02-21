@@ -11,7 +11,3 @@ export const config = {
   LicenseKey: process.env.LicenseKey!
 };
 
-
-const good = {
-  google: 'google',
-}
