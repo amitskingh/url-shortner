@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
+import Redis from "ioredis";
 import APIError from "../errors/APIError";
 import { prisma } from "../prisma";
-import { encodeBase62, decodeBase62 } from "../utils/shortURL";
 import { trackClick } from "../queues/queue";
-import Redis from "ioredis";
-import { UAParser } from "ua-parser-js";
+import { decodeBase62, encodeBase62 } from "../utils/shortURL";
 
 const redis = new Redis();
 
@@ -136,15 +135,25 @@ const redirectAlias = async (req: Request, res: Response) => {
     const referrer = req.get("Referrer") || "Direct";
     const userAgent = req.get("User-Agent") || "unknown";
 
-    const parser = new UAParser(userAgent);
-
     const { shortURL } = req.params;
 
     const aliasId = decodeBase62(shortURL);
 
     const cachedURL = await redis.get(`alias:${aliasId}`);
     if (cachedURL) {
-      trackClick({ aliasId, ip, referrer, userAgent });
+      const aliasRecord = await prisma.alias.update({
+        where: { id: aliasId },
+        data: {
+          clickCount: { increment: 1 },
+        },
+      });
+      trackClick({
+        aliasId,
+        ip,
+        referrer,
+        userAgent,
+        totalClickCount: aliasRecord.clickCount,
+      });
       res.redirect(301, cachedURL);
       return;
     }
@@ -162,7 +171,13 @@ const redirectAlias = async (req: Request, res: Response) => {
       throw new APIError(404, "Alias not found", "ALIAS_NOT_FOUND");
     }
 
-    trackClick({ aliasId, ip, referrer, userAgent });
+    trackClick({
+      aliasId,
+      ip,
+      referrer,
+      userAgent,
+      totalClickCount: aliasRecord.clickCount,
+    });
 
     await redis.set(`alias:${aliasId}`, aliasRecord.longURL.originalUrl);
 
@@ -186,4 +201,5 @@ const redirectAlias = async (req: Request, res: Response) => {
   }
 };
 
-export { fetchAllAlias, createAlias, redirectAlias };
+export { createAlias, fetchAllAlias, redirectAlias };
+

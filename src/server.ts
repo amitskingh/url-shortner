@@ -1,25 +1,15 @@
-import app from "./app";
-import { Server } from "socket.io";
+import express from "express";
+import { Express } from "express";
 import http from "http";
-import Redis from "ioredis";
+import { setupWebSocket } from "./websocket/socket";
+import { app } from "./app";
 
-const pub = new Redis();
-const sub = new Redis();
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
 
-sub.subscribe("analyticsChannel");
-
-sub.on("message", (channel, message) => {
-  io.emit("analyticsUpdate", JSON.parse(message)); // Send to all clients
-});
-
-server.listen(3001, () => console.log("WebSocket running on 3001"));
-
-
+setupWebSocket(server);
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+server.listen(PORT, () => {
+  console.log("server listening on port");
 });

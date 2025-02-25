@@ -3,4 +3,5 @@ export type ClickJobData = {
   ip: string;
   referrer: string;
   userAgent: string;
+  totalClickCount: number;
 };

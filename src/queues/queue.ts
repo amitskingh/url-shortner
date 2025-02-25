@@ -8,8 +8,20 @@ export const clickQueue = new Queue("clickQueue", {
   },
 });
 
-async function trackClick({ aliasId, ip, referrer, userAgent }: ClickJobData) {
-  await clickQueue.add("trackClick", { aliasId, ip, referrer, userAgent });
+async function trackClick({
+  aliasId,
+  ip,
+  referrer,
+  userAgent,
+  totalClickCount,
+}: ClickJobData) {
+  await clickQueue.add("trackClick", {
+    aliasId,
+    ip,
+    referrer,
+    userAgent,
+    totalClickCount,
+  });
 }
 
 export { trackClick };

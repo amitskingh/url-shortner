@@ -6,8 +6,8 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 export const config = {
   PORT: process.env.PORT || 3000,
   REDIS_URL: process.env.REDIS_URL!,
-  clickChannel: 'clickUpdates',
+  clickChannel: "clickUpdates",
   AccountID: process.env.AccountID!,
-  LicenseKey: process.env.LicenseKey!
+  LicenseKey: process.env.LicenseKey!,
+  FIREBASE_SERVICE_ACCOUNT: process.env.FIREBASE_SERVICE_ACCOUNT,
 };
-
