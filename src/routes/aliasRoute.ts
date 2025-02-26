@@ -5,14 +5,12 @@ import {
   redirectAlias,
 } from "../controllers/aliasController";
 
-
 const router = Router();
 
 router.get("/", fetchAllAlias);
 
 router.post("/short", createAlias);
 
-router.get("/:aliasId", redirectAlias);
-
+router.get("/:shortURL", redirectAlias);
 
 export = router;

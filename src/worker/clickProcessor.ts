@@ -100,6 +100,10 @@ worker.on("failed", (job, err) => {
   );
 });
 
+worker.on("ready", () => {
+  console.log("worker ready");
+});
+
 function mapBrowserType(browser: string | undefined): BrowserType | null {
   if (!browser) return null;
   const browserMap: Record<string, BrowserType> = {
@@ -133,3 +137,7 @@ function mapDeviceType(device: string | undefined): DeviceType | null {
   };
   return deviceMap[device] || null;
 }
+
+redisClient.on("error", (err) => {
+  console.error("Redis connection error:", err);
+});

@@ -3,7 +3,7 @@ import { config } from "../config";
 
 // Create Redis client for commands (publisher)
 export const redisClient = new Redis(config.REDIS_URL, {
-  maxRetriesPerRequest: 20, // Retry on failure
+  maxRetriesPerRequest: null, // Retry on failure
   retryStrategy(times) {
     const delay = Math.min(times * 50, 2000); // Exponential backoff, max 2s
     return delay;
@@ -12,7 +12,7 @@ export const redisClient = new Redis(config.REDIS_URL, {
 
 // Create a separate Redis client for subscribing (Redis requires a dedicated connection for pub/sub)
 export const redisSubscriber = new Redis(config.REDIS_URL, {
-  maxRetriesPerRequest: 20,
+  maxRetriesPerRequest: null,
   retryStrategy(times) {
     const delay = Math.min(times * 50, 2000);
     return delay;
@@ -49,34 +49,34 @@ redisSubscriber.on("connect", () => {
 });
 
 // Example usage: Set and get a key
-async function testRedis() {
-  try {
-    // Set a key-value pair
-    await redisClient.set("testKey", "Hello, Redis!");
-    console.log("Set key 'testKey' successfully");
+// async function testRedis() {
+//   try {
+//     // Set a key-value pair
+//     await redisClient.set("testKey", "Hello, Redis!");
+//     console.log("Set key 'testKey' successfully");
 
-    // Get the value
-    const value = await redisClient.get("testKey");
-    console.log("Retrieved value:", value);
+//     // Get the value
+//     const value = await redisClient.get("testKey");
+//     console.log("Retrieved value:", value);
 
-    // Example pub/sub
-    await redisSubscriber.subscribe("channel1");
-    console.log("Subscribed to channel1");
+//     // Example pub/sub
+//     await redisSubscriber.subscribe("channel1");
+//     console.log("Subscribed to channel1");
 
-    redisSubscriber.on("message", (channel, message) => {
-      console.log(`Received message on ${channel}: ${message}`);
-    });
+//     redisSubscriber.on("message", (channel, message) => {
+//       console.log(`Received message on ${channel}: ${message}`);
+//     });
 
-    // Publish a message
-    await redisClient.publish("channel1", "Test message from Redis!");
-  } catch (error) {
-    console.error("Error in Redis operations:", error);
-  }
-}
+//     // Publish a message
+//     await redisClient.publish("channel1", "Test message from Redis!");
+//   } catch (error) {
+//     console.error("Error in Redis operations:", error);
+//   }
+// }
 
-// Verify connections and run test
-(async () => {
-  await verifyConnection(redisClient, "Redis Client");
-  await verifyConnection(redisSubscriber, "Redis Subscriber");
-  await testRedis();
-})();
+// // Verify connections and run test
+// (async () => {
+//   await verifyConnection(redisClient, "Redis Client");
+//   await verifyConnection(redisSubscriber, "Redis Subscriber");
+//   await testRedis();
+// })();

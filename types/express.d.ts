@@ -3,7 +3,7 @@ declare global {
   namespace Express {
     interface Request {
       user: {
-        userId: number; // Add the user property to the Request interface
+        userId?: number; // Add the user property to the Request interface
       };
     }
   }
