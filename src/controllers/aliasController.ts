@@ -148,14 +148,17 @@ const redirectAlias = async (req: Request, res: Response) => {
     const aliasId = decodeBase62(shortURL);
     console.log(shortURL, aliasId);
 
+    // Check if alias exists in Redis
     const cachedURL = await redis.get(`alias:${shortURL}`);
     if (cachedURL) {
+      // Ensure clickCount still updates in DB
       const aliasRecord = await prisma.alias.update({
         where: { alias: shortURL },
         data: {
           clickCount: { increment: 1 },
         },
       });
+
       trackClick({
         aliasId: aliasRecord.id,
         ip,
@@ -163,33 +166,51 @@ const redirectAlias = async (req: Request, res: Response) => {
         userAgent,
         totalClickCount: aliasRecord.clickCount,
       });
+
+      // Redirect after updating click count
       res.redirect(301, cachedURL);
       return;
     }
 
-    const aliasRecord = await prisma.alias.findFirst({
+    // Fetch from DB if not in cache
+    let aliasRecord = await prisma.alias.findFirst({
       where: {
         OR: [{ id: aliasId }, { alias: shortURL }],
       },
       include: {
         longURL: true,
       },
-    })
-
+    });
 
     if (!aliasRecord) {
       throw new APIError(404, "Alias not found", "ALIAS_NOT_FOUND");
     }
 
+    // Increment click count in DB
+    aliasRecord = await prisma.alias.update({
+      where: { id: aliasRecord.id },
+      data: {
+        clickCount: { increment: 1 },
+      },
+      include: {
+        longURL: true,
+      },
+    });
+
     trackClick({
-      aliasId,
+      aliasId: aliasRecord.id,
       ip,
       referrer,
       userAgent,
       totalClickCount: aliasRecord.clickCount,
     });
 
-    await redis.set(`alias:${shortURL}`, aliasRecord.longURL.originalUrl);
+    // Cache the long URL in Redis with an expiration time
+    await redis.setex(
+      `alias:${shortURL}`,
+      86400,
+      aliasRecord.longURL.originalUrl
+    );
 
     res.redirect(301, aliasRecord.longURL.originalUrl);
     return;

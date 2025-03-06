@@ -17,7 +17,9 @@ const fetchCityAndCountry = async (ip: string): Promise<Location> => {
     if (!AccountID || !LicenseKey)
       throw new Error("MaxMind credentials missing");
 
-    const client = new WebServiceClient(AccountID, LicenseKey);
+    const client = new WebServiceClient(AccountID, LicenseKey, {
+      host: "geolite.info",
+    });
     const response = await client.city(ip);
     data = {
       country: response.country?.names.en || null,
