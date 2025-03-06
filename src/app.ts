@@ -15,7 +15,7 @@ const app = createServer();
 app.use(morgan("dev"));
 app.use(express.json());
 
-app.use("/api/v1", aliasRouter);
+app.use("/api/v1", authenticate, aliasRouter);
 app.use("/api/v1/analytics", authenticate, analyticsRouter);
 
 export { createServer, app };
