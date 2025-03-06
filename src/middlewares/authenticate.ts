@@ -9,27 +9,26 @@ const authenticate = async (
   next: NextFunction
 ) => {
   try {
-    // const token = req.headers.authorization?.split(" ")[1];
-    // if (!token) {
-    //   throw new APIError(401, "Unauthorize", "INVALID_TOKEN");
-    // }
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      throw new APIError(401, "Unauthorize", "INVALID_TOKEN");
+    }
 
-    // const decodedToken = await getAuth().verifyIdToken(token);
-    // if (!decodedToken) {
-    //   throw new APIError(401, "Invalid token", "INVALID_TOKEN");
-    // }
-    // const uid = decodedToken.uid;
+    const decodedToken = await getAuth().verifyIdToken(token);
+    if (!decodedToken) {
+      throw new APIError(401, "Invalid token", "INVALID_TOKEN");
+    }
+    const uid = decodedToken.uid;
 
-    // const user = await prisma.user.findFirst({
-    //   where: { firebaseId: uid },
-    // });
+    const user = await prisma.user.findFirst({
+      where: { firebaseId: uid },
+    });
 
-    // if (!user) {
-    //   throw new APIError(401, "Unauthorized", "USER_NOT_FOUND");
-    // }
+    if (!user) {
+      throw new APIError(401, "Unauthorized", "USER_NOT_FOUND");
+    }
 
-    // req.user = { userId: user.id };
-    req.user = { userId: 1 };
+    req.user = { userId: user.id };
 
     next();
   } catch (error) {
