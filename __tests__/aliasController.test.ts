@@ -1,7 +1,7 @@
 import request from "supertest";
-import { app } from "../../src/app";
+import { app } from "../src/app";
 import { Express } from "express";
-import { prisma } from "../../jest.setup";
+import { prisma } from "../jest.setup";
 
 describe("GET /api/v1/", () => {
   afterAll(async () => {
@@ -22,6 +22,8 @@ describe("GET /api/v1/", () => {
   });
 
   it("should redirect alias", async () => {
-    const response = await request(app).get("/api/v1/short/");
+    const response = await request(app).get("/api/v1/myurl");
+
+    expect(response.status).toBe(301);
   });
 });
