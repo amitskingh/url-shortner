@@ -1,7 +1,6 @@
 import request from "supertest";
-import { app } from "../src/app";
-import { Express } from "express";
 import { prisma } from "../jest.setup";
+import { app } from "../src/app";
 
 describe("GET /api/v1/", () => {
   afterAll(async () => {
@@ -11,7 +10,7 @@ describe("GET /api/v1/", () => {
   it("should create an alias", async () => {
     const response = await request(app)
       .post("/api/v1/short")
-      .send({ longURL: "www.google.com" });
+      .send({ longURL: "www.google.com", customAlias: "myurl" });
 
     expect(response.status).toBe(201);
 
