@@ -59,7 +59,6 @@ A URL shortener with advanced analytics, including click tracking, country-based
 
 | Method | Endpoint | Description |
 |--------|---------|-------------|
-| `POST` | `/api/v1/auth/login` | User Login |
 | `POST` | `/api/v1/` | Fetch all shorten URL |
 | `POST` | `/api/v1/short` | Shorten a URL |
 | `GET` | `/api/v1/:shortURL` | Redirect to Original URL |
