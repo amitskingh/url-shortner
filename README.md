@@ -26,8 +26,8 @@ A URL shortener with advanced analytics, including click tracking, country-based
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-username/your-repo.git
-   cd your-repo
+   git clone https://github.com/amitskingh/url-shortner
+   cd url-shortner
    ```
 
 2. Install dependencies:
@@ -52,6 +52,7 @@ A URL shortener with advanced analytics, including click tracking, country-based
 4. Start the development server:
    ```sh
    npm run dev
+   npm run worker
    ```
 
 ## 📡 API Endpoints
